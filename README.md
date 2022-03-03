@@ -7,4 +7,5 @@ HTB: Shibboleth (Medium)<br>
 HTB: Devzat (Medium)<br>
 HTB: Pandora (Easy)<br>
 HTB: Paper (Easy) WIP<br>
+HTB: Meta (Medium) WIP<br>
 MetaCTF(2021) WIP<br>
