@@ -8,4 +8,6 @@ HTB: Pandora (Easy)<br>
 HTB: Paper (Easy) <br>
 HTB: Meta (Medium) WIP<br>
 HTB: Akerva (Fortress) WIP<br>
-MetaCTF(2021) WIP<br>
+HTB: Catch (Medium) WIP<br>
+HTB: Undetected (Medium) WIP<br>
+HTB: RouterSpace (Easy) WIP<br>
