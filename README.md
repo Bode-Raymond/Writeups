@@ -3,7 +3,6 @@ This repo is a collection of all of my public writeups for CTF competitions, Hac
 
 ## Currently Privatized Writeups
 
-HTB: Shibboleth (Medium)<br>
 HTB: Pandora (Easy)<br>
 HTB: Paper (Easy) <br>
 HTB: Meta (Medium) WIP<br>
