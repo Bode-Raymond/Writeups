@@ -1,0 +1,3 @@
+cargo:rerun-if-changed=build/main.rs
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/home/bode/Documents/Cybersecurity/Writeups/CTF/2022/NSA-Codebreaker/Task9/solver/target/debug/build/typenum-a53c0a1f0483c01c/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/home/bode/Documents/Cybersecurity/Writeups/CTF/2022/NSA-Codebreaker/Task9/solver/target/debug/build/typenum-a53c0a1f0483c01c/out/op.rs
