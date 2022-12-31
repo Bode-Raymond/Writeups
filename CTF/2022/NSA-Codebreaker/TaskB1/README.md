@@ -12,13 +12,13 @@ Analyze the demand site, and see if you can find a connection to another ransomw
 
 The provided file is a ransom note directing the reader to `https://ihrharfpxgvqvozv.unlockmyfiles.biz/`.
 
-This link leads users to a ransom demand page detailing the neccessary steps to recover the encrypted data. The premise of the challenge is to find where this website is reaching to for the information displayed on this page such as time and the ransom amount. 
+This link leads users to a ransom demand page detailing the necessary steps to recover the encrypted data. The premise of the challenge is to find where the website is reaching out to for the information displayed on this page, such as time and the ransom amount.
 
-Opening the dev tools window shows that a JS file called `connect.js` is being used to get the neccessary information.
+Opening the dev tools window shows that a JS file called `connect.js` is being used to get the necessary information.
 
 ![](./img/connect.png)
 
-Unfortunatly, the JS is obfuscated and difficult to read. However, this is no issue due to the existence of the network tab in the dev tools. The network tab will show any request made by the webpage; including and request to a 3rd party service.
+Unfortunately, the JS is obfuscated and difficult to read. However, this is no issue due to the existence of the network tab in the dev tools. The network tab will show any request made by the webpage, including and request to a 3rd party service.
 
 ![](./img/request.png)
 
