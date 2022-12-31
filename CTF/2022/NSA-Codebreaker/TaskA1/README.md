@@ -14,5 +14,5 @@ I used `awk` with `sort` to parse the data in a way that allowed me to easily an
 
 `awk -F ',' '{print $2,"\t",$3,"\t",$4/60/60}' vpn.log | sort`
 
-Looking through the data returned from the above command reveals that Kimberly.M had multiple sessions open at the same time.
+Looking through the data returned from the above command reveals that `Kimberly.M` had multiple sessions open at the same time.
 
