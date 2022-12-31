@@ -8,11 +8,9 @@ Note that all IP addresses have been anonymized.
 
 ## Solution
 
-It can be noted from the description that because the credentials are legitimate, the solution will not be found in failed logins or users not found. Additionally, due to IP addresses being anonymized, there will be no geo-disparate data or some similar metric using IPs to find anomolies.
+It can be noted from the description that because the credentials are legitimate, the solution will not be found in failed logins or users not found. Additionally, due to IP addresses being anonymized, there will be no geo-disparate data or any similar metric that can be used to find anomalies. Using the information derived from the challenge description, it can be seen that the most likely anomaly is simultaneous logins.
 
-Using the information previously stated it can be determined that the most likely anomoly that has not already been ruled out is simutanious logins.
-
-I used `awk` with `sort` to parse and sort the data in a way that allowed me to easily analize time stamps.
+I used `awk` with `sort` to parse the data in a way that allowed me to easily analyze time stamps.
 
 `awk -F ',' '{print $2,"\t",$3,"\t",$4/60/60}' vpn.log | sort`
 
