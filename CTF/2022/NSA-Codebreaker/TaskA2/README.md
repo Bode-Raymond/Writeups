@@ -12,17 +12,17 @@ The FBI hopes that these tools may provide a clue to the attacker's identity.
 
 As stated in the challenge description, the packets in `session.pcap` are encrypted and need a key to decrypt. This is where the root directory comes in.
 
-There are two files in root directory that are important. First, the `runwww.py` script which sets up the transfering of files using SSL. Second, the `.cert.pem` which contains the public and private key used by `runwww.py` to encrypt and decrypt data.
+There are two files in the `root` directory that are important. First, the `runwww.py` script sets up the transfer of files using SSL. Second, the `.cert.pem` contains the public and private keys used by `runwww.py` to encrypt and decrypt data.
 
-The private key can be used in wireshark to decrypt the SSL packets so they can be analyzed as plaintext.
+The private key can be used in Wireshark to decrypt the SSL packets so they can be analyzed as plaintext.
 
 ![](./img/decryption.png)
 
-The plaintext traffic both reveals the transfered tar file and the username of the attacker; "WoozyWetTusk".
+The plaintext traffic reveals both the transferred tar file and the username of the attacker, `WoozyWetTusk`.
 
 ![](./img/tlsstream.png)
 
-The data can then be downloaded as raw bytes and extracted to a tar ball using `binwalk`.
+The data can then be downloaded as raw bytes and extracted to a tarball using `binwalk`.
 
 ![](./img/binwalk.png)
 
