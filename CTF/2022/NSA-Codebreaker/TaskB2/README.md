@@ -10,11 +10,11 @@ Hint: this group seems a bit sloppy. They might be exposing more than they inten
 
 ## Solution 
 
-As stated in the description there is some information leak in the website that reveals the path forward. Analyzing the request headers reveals an unusual request header `x-git-commit-hash`. This implies that the web developer was using git for version control and my have left the `.git` directory in the root of the website. This is reflected as true when querying `https://jbjlxkyofmpcxooy.ransommethis.net/.git/` which returns a 400 error instead of a 403 error.
+As stated in the challenge description, there is an information leak on the website that reveals the path forward. Analyzing the request headers reveals an unusual request header; `x-git-commit-hash`. This implies that the web developer was using `git` for version control and may have left the .git directory at the root of the website. This is shown to be true when querying `https://ihrharfpxgvqvozv.ransommethis.net/.git/` which returns a `400` error instead of a `403` error.
 
 ![](./img/400error.png)
 
-The repository associated with this `.git` directory can be recovered by using git dumper. This tool will not only get the `.git` folder, but it will also recover all of the source code for the website.
+The repository associated with this `.git` directory can be recovered by using `git dumper`. This tool will not only recover the `.git` folder, but it will also recover all of the website's source code.
 
 `git-dumper https://jbjlxkyofmpcxooy.ransommethis.net/.git/ source`
 
@@ -24,7 +24,7 @@ The source code can now be analyzed to determine how to reach the login page for
 
 ![](./img/source.png)
 
-Navigating to `https://jbjlxkyofmpcxooy.ransommethis.net/qschfbjhzihmssyy/login` reveals the login page and the path key `qschfbjhzihmssyy` is the solution to the challenge.
+Navigating to `https://jbjlxkyofmpcxooy.ransommethis.net/qschfbjhzihmssyy/login` reveals the login page, and the path key `qschfbjhzihmssyy` is the solution to the challenge.
 
 ![](./img/login.png)
 
