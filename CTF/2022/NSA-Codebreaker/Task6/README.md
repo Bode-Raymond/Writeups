@@ -8,18 +8,18 @@ Generate a new token value which will allow you to access the ransomware site.
 
 ## Solution
 
-The file from task 5 contained the details for a cookie which is used on the `ransommethis.net` website. This cookie named `tok` is assumed to be used for authenticating the users for the website.
+The file from task 5 contained the details for a cookie that is used on the `ransommethis.net` website. This cookie, named `tok` is assumed to be used for authenticating the users for the website.
 
 ```
 # Netscape HTTP Cookie File
 jbjlxkyofmpcxooy.ransommethis.net	FALSE	/	TRUE	2145916800	tok	eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTQ4Mzg3MDMsImV4cCI6MTY1NzQzMDcwMywic2VjIjoiV1JlQXNabkM4YXRFRUxkQVBwY0lzMHlIQ0x6cVBpMWEiLCJ1aWQiOjI2NTY3fQ.Qn5LtF2XCtKOPLkGzPfrLG7WTMFwvnNihI_yzIJDAYk 
 ```
 
-The provided token is a JSON Web Token Containing two time stamps for creation and expiration as well as the `uid` and `sec` which are used for authenticating the user.
+The provided token is a JSON Web Token Containing two time stamps for creation and expiration as well as the `uid` and `sec`, which are used for authenticating the user.
 
 ![](./img/jwt.png)
 
-The flask source code shows that the token is using a signing key which needs to be used when forging a token. Additionally it shows that if the signature is valid then SQLite3 is used to verify the `uid` and `sec`.
+The flask source code shows that the token is using a signing key which needs to be used when forging a token. Additionally, it shows that if the signature is valid, then SQLite3 is used to verify the `uid` and `sec`.
 
 ![](./img/sessionlogic.png)
 
