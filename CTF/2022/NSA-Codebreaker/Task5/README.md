@@ -18,29 +18,29 @@ The challenge provides three files.
 2. `core` - Core dump SSH Agent containing the private key of the attacker in memory.
 3. `data.enc` - Encrypted message that needs to be decrypted with the extracted private key.
 
-The core dump can be both statically and dynamically analyzed using GDB or Ghidra. Because I had never reversed a core dump before I started with rearching how I would recover the private key from a code dump of SSH-Agent and came across this article:
+The core dump can be both statically and dynamically analyzed using GDB or Ghidra. Because I had never reversed a core dump before, I started by researching how I would recover the private key from a core dump of SSH-Agent and came across this article:
 
 [](https://security.humanativaspa.it/openssh-ssh-agent-shielded-private-key-extraction-x86_64-linux/)
 
 The article walks through how the private key is stored in memory and how to find it. 
 
-The beginning of the article displays a screenshot of the OpenSSH source code. To get a better idea of how ssh-agent works I pulled the source code and started looking through it.
+The beginning of the article displays a screenshot of the OpenSSH source code. To get a better idea of how ssh-agent works, I pulled the source code and started looking through it.
 
 The screenshots in the article show that the ssh key and prekey are stored in an `sshkey` struct. The sshkey struct is then used in the `identity` struct. 
 
 ![](./img/id_sshkey_struct.png)
 
-The identity struct is then used in the `idtable` struct which stores a linked list of identities. The idtable is instantiated as a uninitialized global variable which means it can be found in the `.bss` section.
+The identity struct is then used in the `idtable` struct which stores a linked list of identities. The `idtable` is instantiated as an uninitialized global variable which means it can be found in the `.bss` section.
 
 !()[./img/idtable_global.png]
 
-The problem with finding where `idtable` is located in the `.bss` sections is that PIE is enabled on the ssh-agent binary meaning that the address of idtable in the core file will not be the same as the idtable address in the static binary. To find the offset I would need to get figure out the PIE offset and use that to find idtable in the core file. Because the process was run on Ubuntu 20.04 as described in the challenge description, I had to spin up a docker container to do the dynamic analysis.
+The problem with finding where `idtable` is located in the `.bss` section is that PIE is enabled on the `ssh-agent` binary, meaning that the address of `idtable` in the core file will not be the same as the `idtable` address in the static binary. To find the offset, I would need to figure out the PIE offset and use that to find idtable in the core file. Because the process was run on Ubuntu 20.04 as described in the challenge description, I had to spin up a docker container to do the dynamic analysis.
 
-Using gdb it is possible to see the call stack up to where the program was crashed. Stack frame #2 shows `__libc_start_main` which is followed immediately by an unnamed location in from #1. It can be reasonably assumed that this is the main function.
+Using gdb it is possible to see the call stack up to where the program was crashed. Stack frame #2 shows `__libc_start_main`, which is followed immediately by an unnamed location in from #1. It can be reasonably assumed that this is the `main` function.
 
 ![](./img/stacktrace.png)
 
-Dissassembling the instruction pointer at this address shows some instructions being execueted which are presumably inside main. The addresses here are the run time addresses which need to be compared to the static addresses to determine the PIE offset. Using this information and the presumption that the asm is in main it is trivial to find the static address in ghidra.<br>
+Disassembling the instruction pointer at this address shows some instructions being executed which are presumably inside `main`. The addresses here are the run time addresses that need to be compared to the static addresses to determine the PIE offset. Using this information and the presumption that the asm is in `main` it is trivial to find the static address in Ghidra.<br>
 Note: the reason why I call `x/32i $rip-5` instead of `x/32i $rip` is because RIP is pointing to the address after the active call function call which happens to be 5 bytes in size.
 
 ![](./img/disas.png)
@@ -65,7 +65,7 @@ Offset = Dynamic - Static
        = 0x55af6a287000
 ```
 
-The PIE offset can now be used to find the dynamic address of any static item in the binary including `idtab`. To find `idtab` in the core file, the function call to `idtab_init` must be found in main.
+The PIE offset can now be used to find the dynamic address of any static item in the binary, including `idtab`. To find `idtab` in the core file, the function call to `idtab_init` must be found in `main`.
 
 ![](./img/main_idtab_init)
 
@@ -86,15 +86,15 @@ Dynamic = Static + Offset
 
 ![](./img/idtab_ptr.png)
 
-The pointer above is pointing to 0x55af6b9d63c0 which is the `idtab`. This is confirmed by the structure of the memory matching the struct as it is defined in the source code.
+The pointer above is pointing to 0x55af6b9d63c0, which is the `idtab`. This is confirmed by the structure of the memory matching the struct as it is defined in the source code.
 
 ![](./img/idtab.png)
 
-The second value in the idtab is the head of the identity linked list and points to the indentity which is holding the desired sshkey struct.
+The second value in the `idtab` is the head of the identity linked list and points to the `identity`, which is holding the desired `sshkey` struct.
 
 ![](./img/identity.png)
 
-Inside the identity struct, the next pointer, sshkey pointer, and comment string in memory. Following the second pointer leads to the desired sshkey struct.
+Inside the `identity` struct, the `next` pointer, `sshkey` pointer, and `comment` string are listed successfully in memory. Following the second pointer leads to the desired `sshkey` struct.
 
 ![](./img/sshkey.png)
 
@@ -102,11 +102,11 @@ Following the data structure down the heap eventually shows the last four values
 
 ![](./img/keys.png)
 
-Now that the locations and lengths of the neccessary data is known, they can be extracted in gdb using `dump memory`.
+Now that the locations and lengths of the necessary data are known, they can be extracted in gdb using `dump memory`.
 
 ![](./img/dumpmem.png)
 
-The final step is to decrypt the rsa key either using python or gdb with ssh-keygen. I used the same process listed in the original article, using gdb with ssh-keygen to decrypt the RSA key.
+The final step is to decrypt the RSA key either using python or gdb with ssh-keygen. I used the same process listed in the original article, using gdb with ssh-keygen to decrypt the RSA key.
 
 ```bash
 $ tar xvfz openssh-8.6p1.tar.gz
@@ -148,7 +148,7 @@ The result of this process is the private key in OpenSSH format.
 
 ![](./img/opensshprivkey.png)
 
-To decrypt the message and solve the challenge, the private key must be converted to PEM format. Converting the format is as simple as running `ssh-keygen -p -f privkey.pem -m pem`.
+To decrypt the message and solve the challenge, the private key must be converted to PEM format. Converting the key format is as simple as running `ssh-keygen -p -f privkey.pem -m pem`.
 
 ![](./img/pemprivkey.png)
 
