@@ -96,8 +96,6 @@ The second value in the `idtab` is the head of the identity linked list and poin
 
 Inside the `identity` struct, the `next` pointer, `sshkey` pointer, and `comment` string are listed successfully in memory. Following the second pointer leads to the desired `sshkey` struct.
 
-![](./img/sshkey.png)
-
 Following the data structure down the heap eventually shows the last four values in the struct: `shielded_private`, `shielded_len`, `shield_prekey`, `shield_prekey_len`.
 
 ![](./img/keys.png)
