@@ -32,7 +32,7 @@ The screenshots in the article show that the ssh key and prekey are stored in an
 
 The identity struct is then used in the `idtable` struct which stores a linked list of identities. The `idtable` is instantiated as an uninitialized global variable which means it can be found in the `.bss` section.
 
-!()[./img/idtable_global.png]
+![](./img/idtable_global.png)
 
 The problem with finding where `idtable` is located in the `.bss` section is that PIE is enabled on the `ssh-agent` binary, meaning that the address of `idtable` in the core file will not be the same as the `idtable` address in the static binary. To find the offset, I would need to figure out the PIE offset and use that to find idtable in the core file. Because the process was run on Ubuntu 20.04 as described in the challenge description, I had to spin up a docker container to do the dynamic analysis.
 
@@ -67,7 +67,7 @@ Offset = Dynamic - Static
 
 The PIE offset can now be used to find the dynamic address of any static item in the binary, including `idtab`. To find `idtab` in the core file, the function call to `idtab_init` must be found in `main`.
 
-![](./img/main_idtab_init)
+![](./img/main_idtab_init.png)
 
 The reason this function is known to be `idtab_init` is because it preceeds a function called `ssh_signal` that is called 4 times.
 
