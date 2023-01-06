@@ -8,15 +8,15 @@ Generate a new token value which will allow you to access the ransomware site as
 
 ## Solution
 
-After gaining access too the administrator pages and exploring the source code for them, a SQL injection vulnerability is revealed in the `/userinfo` page. The output of the SQL query all casted to integers before being displayed on the page, meaning only integers such as the `uid` can be leaked directly.
+After gaining access to the administrator pages and exploring the source code for them, a SQL injection vulnerability is revealed on the `/userinfo` page. The output of the SQL query is all cast to integers before being displayed on the page, meaning only integers such as the `uid` can be leaked directly.
 
 ![](./img/sqli.png)
 
-This is the only query in the entire website that does not use prepared statements. The injection can be triggered with `'<payload>;-- -`. The paylod below is a boolean basedblind sql injection used to brute force the hex encoded version of the secret.
+This is the only query in the entire website that does not use prepared statements. The injection can be triggered with `'<payload>;-- -`. The payload below is a boolean-based blind SQL injection used to brute force the hex-encoded version of the secret.
 
 `HealthyRespect' and (SELECT substr(hex(secret),1,1) FROM Accounts WHERE userName='HealthyRespect') = '4';-- -`
 
-I scripted this attack with python to automatically extract the secret.
+I scripted this attack with python to automatically extract the `secret`.
 
 ```python
 import jwt
@@ -68,7 +68,7 @@ print(f"\nSecret: {bytes.fromhex(''.join(secret)).decode('utf-8')}")
 
 ![](./img/getsecret.png)
 
-I also used the same method of boolean based blind sql injection to brute force the uid, however since this is an integer value it can also be leaked directly.
+I also used the same method of boolean-based blind SQL injection to brute force the `uid`. However, since this is an integer value, it can also be leaked directly.
 
 ```python
 import jwt
@@ -120,7 +120,7 @@ print(f"\nUID: {bytes.fromhex(''.join(secret)).decode('utf-8')}")
 
 ![](./img/getuid.png)
 
-Using the information gathered from the previous injections I was able to forge an admin token allowing access to the admin panel.
+Using the information gathered from the previous injections, I was able to forge an admin token allowing access to the admin panel.
 
 ```
 import jwt
