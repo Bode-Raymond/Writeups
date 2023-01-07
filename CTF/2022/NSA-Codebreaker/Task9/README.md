@@ -8,15 +8,15 @@ There's one last shred of hope: your cryptanalysis skills. We've given you one o
 
 ## Solution
 
-Funny story for this writeup. It took me 4 rewrites to get this to work in acceptable amount of time. Additionally, I started my brute force at the time stamp from the log file in task A1 rather than the intended method of using the key generation log from the website.
+Funny story for this writeup. It took me 4 rewrites to get this to work in an acceptable amount of time. Additionally, I started my brute force at the time stamp from the log file in task A1 rather than the intended method of using the key generation log from the website.
 
-The first step in this challenge was more reversing of the keyMaster binary. In the third step of the lock branch, a sql connection is made. Reading the asm of the sql connection being made reveals hardcoded strings which contains the command `sqlite3` and connects to a database file called `./keyMaster.db`. This database file can be leaked using the same LFI vulnerability from task 7.
+The first step in this challenge was reversing the `keyMaster` binary. In the third step of the lock branch, a SQL connection is made. Reading the assembly of the SQL connection being made reveals hardcoded strings that contain the command `sqlite3` and connects to a database file called `./keyMaster.db`. This database file can be leaked using the same LFI vulnerability from task 7.
 
 ![](./img/sqlopen.png)
 
 ![](./img/keymasterdb.png)
 
-The database file contains several encrypted keys which can be decrypted using the master key. The code below is what I wrote to decrypt every key in the database.
+The database file contains several encrypted keys, which can be decrypted using the master key. The code below is what I wrote to decrypt every key in the database.
 
 ```python
 from datetime import datetime
@@ -49,7 +49,7 @@ for key in keys:
 
 ![](./img/keys.png)
 
-According to the keyMaster binary, these keys are version 1 UUIDs. It would also appear that over halfof the key is a constant and will not need to be bruteforced.
+According to the keyMaster binary, these keys are version 1 UUIDs. It would also appear that over half of the key is a constant and will not need to be brute-forced.
 
 The next step is determining how the file is encrypted, which can be found in the tools folder from task A2.
 
@@ -63,21 +63,21 @@ export hexkey
 
 This encryption script will find any file with the listed extensions, generate a random initialization vector, add the IV to the beginning of the encrypted file, and encrypt the contents of the original file using AES-128-CBC.
 
-The last thing to understand before starting the bruteforce is how to intelligently bruteforce the key. Because this is a time based UUID, it would be sensable to figure out what time would be best to start the bruteforce. Origionally I only used the VPN log from task A1, but in this writeup I will use the better time stamp from the key generation log.
+The last thing to understand before starting the brute force is how to intelligently brute force the key. Because this is a time-based UUID, it would be sensable to figure out what time would be best to start the brute force. Originally I only used the VPN log from task A1, but in this writeup, I will use the better time stamp from the key generation log.
 
 ![](./img/timestamp.png)
 
-Now that I have everything, I had to infrence how the key is being used. There are 3 reasons why I was able to determine how the key was being used.
+Now that I have everything, I had to inference how the key is being used. There are 3 reasons why I was able to determine how the key was being used.
 
-1. It would be nonsense to use a non-ascii key when the key is being passed via the command line.
+1. It would be nonsense to use a non-ASCII key when the key is being passed via the command line.
 
-2. The encryption being 128 bits is less than the length of the key in the database.
+2. The encryption being 128 bits, is less than the length of the key in the database.
 
-3. The `ransom.sh` script even truncaes any passed key to 16 bytes in length by converting it to hex and cutting it down to length 32.
+3. The `ransom.sh` script even truncates any passed key to 16 bytes in length by converting it to hex and cutting it down to length 32.
 
-All of this combined determines the key format needed for the bruteforce.
+All of this combined determines the key format needed for brute force.
 
-My first attempt at this bruteforce was a python script which was painfully slow even with 12 threads. The second attempt was in C++ until I realized it would just be easier in rust. The first attempt at solving in rust was also slow due to poor optimizations. My final iteration in rust contained decent optomization techniques.
+My first attempt at this brute force was a python script which was painfully slow even with 12 threads. The second attempt was in C++ until I realized it would just be easier in rust. The first attempt at solving in rust was also slow due to poor optimizations. My final iteration in rust contained decent optimization techniques.
 
 ```rust
 use aes::Aes128;
@@ -169,7 +169,7 @@ fn main() {
 
 ![](./img/solve.png)
 
-After retrieving the key I devrypted the file in CyberChef and was able to open the decrypted PDF.
+After retrieving the key, I decrypted the file in CyberChef and was able to open the decrypted PDF.
 
 ![](./img/decrypt.png)
 
